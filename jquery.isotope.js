@@ -420,6 +420,13 @@
 
     },
 
+    _expandoSafe: function($elems)
+    {
+      delete $elems.prevObject;
+      
+      return $elems;
+    },
+
     _getAtoms : function( $elems ) {
       var selector = this.options.itemSelector,
           // filter & find
@@ -445,7 +452,7 @@
     // after it has already been initialized.
     _init : function( callback ) {
 
-      this.$filteredAtoms = this._filter( this.$allAtoms );
+      this.$filteredAtoms = this._expandoSafe(this._filter( this.$allAtoms ));
       this._sort();
       this.reLayout( callback );
 
@@ -738,7 +745,7 @@
     addItems : function( $content, callback ) {
       var $newAtoms = this._getAtoms( $content );
       // add new atoms to atoms pools
-      this.$allAtoms = this.$allAtoms.add( $newAtoms );
+      this.$allAtoms = this._expandoSafe(this.$allAtoms.add( $newAtoms ));
 
       if ( callback ) {
         callback( $newAtoms );
@@ -774,7 +781,7 @@
 
     // adds new atoms, then hides them before positioning
     _addHideAppended : function( $newAtoms ) {
-      this.$filteredAtoms = this.$filteredAtoms.add( $newAtoms );
+      this.$filteredAtoms = this._expandoSafe(this.$filteredAtoms.add( $newAtoms ));
       $newAtoms.addClass('no-transition');
 
       this._isInserting = true;
@@ -799,14 +806,14 @@
 
     // gathers all atoms
     reloadItems : function() {
-      this.$allAtoms = this._getAtoms( this.element.children() );
+      this.$allAtoms = this._expandoSafe(this._getAtoms( this.element.children() ));
     },
 
     // removes elements from Isotope widget
     remove: function( $content, callback ) {
       // remove elements immediately from Isotope instance
-      this.$allAtoms = this.$allAtoms.not( $content );
-      this.$filteredAtoms = this.$filteredAtoms.not( $content );
+      this.$allAtoms = this._expandoSafe(this.$allAtoms.not( $content ));
+      this.$filteredAtoms = this._expandoSafe(this.$filteredAtoms.not( $content ));
       // remove() as a callback, for after transition / animation
       var instance = this;
       var removeContent = function() {
