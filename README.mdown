@@ -22,7 +22,9 @@ this.$allAtoms = this.$allAtoms.not( $content );
 
 Let's think about what that means for a minute. We've got ourselves an **Isotope**-ified DOM object--for all intents and purposes: `this`--and it's got some expando data attached to it called `$allAtoms`, which is a list of all of `this`'s child nodes that **Isotope** has installed itself. We're running `$allAtoms` through `not` in order to filter something undesireable out of it and re-assigning the result of that directly to `$allAtoms`.
 
-The result of that `not` contains a `prevObject` attribute, which contains the result of **jQuery's** selection efforts. Again, that will be an array of child nodes of `this` in *every* case, so `this` will be retaining nested chains of cyclical references to those elements no matter how many times they're removed.
+The result of that `not` contains *another* `prevObject` attribute, which contains the result of **jQuery's** selection efforts. Again, that will be an array of child nodes of `this` in *every* case, so `this` will be retaining nested chains of cyclical references to those elements no matter how many times they're removed.
+
+![leaks](https://raw.github.com/khiltd/isotope-leak-free/master/jquery_results_object2.png)
 
 But it gets worse because this re-filtering and re-assignment process happens *repeatedly* and the cyclical references they produce predictably snowball. After just a few **Isotope** insertion/removal cycles, you'll have
 
