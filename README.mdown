@@ -6,21 +6,21 @@ Isotope (leak free)
 The Problem
 ========
 
-In a word: *Expandos*. Despite being the scourge of all web programming for many a year, they're occasionally necessary in cases where you need persistent data to be attached to a specific DOM object. **Isotope** certainly requires this, so it keeps track of lists of *atoms*--which are themselves DOM objects.
+In a word: *Expandos*. Despite being the scourge of all web programming for many a year, they're occasionally necessary in cases where you need persistent data to be attached to a specific DOM object. **Isotope** certainly requires this, so it keeps track of lists of *atoms*--which are basically cutesy synonyms for DOM objects.
 
-Where **Isotope** goes horribly wrong is in assigning the results of **jQuery** selector operations (specifically `not` and `filter`) *directly* to these expando lists. Every **jQuery** selector returns a `prevObject` attribute, which contains the *complete* result set of the previous selector--including the DOM objects selected--thusly supplying the magic necessary for its amazingly popular chaining mechanism to work.
+Where **Isotope** goes horribly wrong is in committing a textbook JavaScript sin by assigning the results of **jQuery** selector operations (specifically `not` and `filter`) *directly* to these expando lists. Every **jQuery** selector operation returns a `prevObject` attribute, which contains the *complete* result set of the previous selector--including the DOM objects selected--thusly supplying the magic necessary for its amazingly popular chaining mechanism to work.
 
-One of many examples littered throughout the **Isotope** code would look like:
+One of many offenses littered throughout the **Isotope** code would look like:
 
 ```javascript
 this.$allAtoms = this.$allAtoms.not( $content );
 ```
 
-So let's think about what that means for a minute. We've got ourselves an Isotope-ified DOM object--`this` and it's got some expando data attached to it called `$allAtoms`. We're running `$allAtoms` through `.not` in order to filter something undesireable out of it and re-assigning the result of that directly to `$allAtoms`.
+Let's think about what that means for a minute. We've got ourselves an **Isotope**-ified DOM object--`this` and it's got some expando data attached to it called `$allAtoms`. We're running `$allAtoms` through `.not` in order to filter something undesireable out of it and re-assigning the result of that directly to `$allAtoms`.
 
 The result of that `not` contains a `prevObject` attribute, which contains the result of **jQuery's** selection efforts. Those will be child elements of `this` in every case, so `this` will be retaining references to those elements even after they've been removed.
 
-But it gets worse because these assignments happen constantly and these cyclical references snowball. After just a few Isotope insertion/removal cycles, you'll have
+But it gets worse because these assignments happen constantly and the cyclical references predictably snowball. After just a few Isotope insertion/removal cycles, you'll have
 
 ```javascript
 this.$allAtoms.prevObject.prevObject.prevObject.prevObject
@@ -30,7 +30,7 @@ and so on and so forth. Don't believe me? Ask Chrome's heap inspector:
 
 ![leaks](https://raw.github.com/khiltd/isotope-leak-free/master/isotope_leaks1.png)
 
-Since all of those `prevObject`s have references to every single DOM element that's *ever* been inserted into the **Isotope** container they will *never* be freed. 
+Since all of those `prevObject`s have references to every single DOM element that's *ever* been inserted into the **Isotope** container they will *never* be freed. If those were complicated DOM objects full of canvases and whatnot, you can easily build a staircase to 300MB of RAM consumption or more in just a few minutes of application use. 
 
 ![leaks](https://raw.github.com/khiltd/isotope-leak-free/master/isotope_leaks2.png)
 
