@@ -30,7 +30,7 @@ and so on and so forth. Don't believe me? Ask Chrome's heap inspector:
 
 ![leaks](https://raw.github.com/khiltd/isotope-leak-free/master/isotope_leaks1.png)
 
-Since all of those `prevObject`s have references to every single DOM element that's *ever* been inserted into the **Isotope** container those elements will *never* be freed. If we're talking about complicated nodes full of canvases and whatnot, you can easily build a staircase to 300MB of RAM consumption or more in just a few minutes of application use if you're adding and removing things on an ongoing basis. 
+Since all of those `prevObject`s have references to every single DOM element that's *ever* been inserted into the **Isotope** container, and each one of them refers to yet another incarnation of the same array, those elements will *never* be freed. If we're talking about complicated nodes full of canvases and whatnot, you can easily build a staircase to 300MB of RAM consumption or more in just a few minutes of application use if you're adding and removing things on an ongoing basis. 
 
 ![leaks](https://raw.github.com/khiltd/isotope-leak-free/master/isotope_leaks2.png)
 
