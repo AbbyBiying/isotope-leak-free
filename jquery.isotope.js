@@ -1,6 +1,12 @@
 /**
- * Isotope v1.5.21
- * An exquisite jQuery plugin for magical layouts
+ * Isotope Leak Free
+ * 
+ * https://github.com/khiltd/isotope-leak-free
+ * 
+ * Forked from Isotope v1.5.21 to stop crashing browsers.
+ *
+ * Original, crashy version by:
+ *
  * http://isotope.metafizzy.co
  *
  * Commercial use requires one-time license fee
