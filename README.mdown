@@ -10,6 +10,10 @@ In a word: *Expandos*. Despite being the scourge of all web programming for many
 
 Where **Isotope** goes horribly wrong is in committing a textbook JavaScript sin by assigning the results of **jQuery** selector operations (specifically `not` and `filter`) *directly* to these expando lists. Every **jQuery** selector operation returns an array with an extra `prevObject` attribute. This attribute contains the *complete* result set of the selector--including the actual DOM objects selected--thusly supplying the magic necessary for its amazingly popular chaining mechanism to work.
 
+Check it out on your console:
+
+![leaks](https://raw.github.com/khiltd/isotope-leak-free/master/jquery_results_object.png)
+
 One of many offenses littered throughout the **Isotope** code would look like:
 
 ```javascript
