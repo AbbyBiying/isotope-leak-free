@@ -18,7 +18,7 @@ this.$allAtoms = this.$allAtoms.not( $content );
 
 Let's think about what that means for a minute. We've got ourselves an **Isotope**-ified DOM object--`this` and it's got some expando data attached to it called `$allAtoms`, which is a list of all of `this`'s child nodes. We're running `$allAtoms` through `not` in order to filter something undesireable out of it and re-assigning the result of that directly to `$allAtoms`.
 
-The result of that `not` contains a `prevObject` attribute, which contains the result of **jQuery's** selection efforts. Again, those will be child nodes of `this` in every case, so `this` will be retaining references to those elements even after they've been removed.
+The result of that `not` contains a `prevObject` attribute, which contains the result of **jQuery's** selection efforts. Again, those will be child nodes of `this` in every case, so `this` will be retaining chains of references to those elements even after they've been removed.
 
 But it gets worse because these assignments happen constantly and the cyclical references predictably snowball. After just a few Isotope insertion/removal cycles, you'll have
 
