@@ -39,7 +39,7 @@ The more you use **Isotope**, the more shit you leave floating around in browser
 The Solution
 ======== 
 
-The fix is simple: **STOP ASSIGNING RAW JQUERY SELECTOR RESULTS TO EXPANDO PROPERTIES ON THE THINGS THEY WERE SELECTING!** Really. That's all it takes. It's not even a deeply guarded industry secret or anything. Here's a really long, really thorough paper about it from IBM: http://www.ibm.com/developerworks/web/library/wa-memleak/
+The fix is simple: **STOP ASSIGNING RAW JQUERY SELECTOR RESULTS TO EXPANDO PROPERTIES ON THE THINGS THEY WERE SELECTING!** Really. That's all it takes. It's not even a heavily guarded industry secret or anything. Here's a really long, really thorough paper about it from IBM: http://www.ibm.com/developerworks/web/library/wa-memleak/
 
 * * *
 
