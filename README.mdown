@@ -1,78 +1,40 @@
-Isotope
+Isotope (leak free)
 ========
 
-**An exquisite jQuery plugin for magical layouts. Enables filtering, sorting, and dynamic layouts.**
+**Isotope** is a cool jQuery plugin that does lots of fancy arrangement, filtering and sorting. Unfortunately, it also leaks memory like a fucking sieve, and its author has expressed a complete lack of interest in remediating this situation despite knowing how simple it is to fix, so here's a fork for people who don't want their users' browsers to crash for the sake of eye candy.
 
-This package has all the documentation and demos to get you started.
+The Problem
+========
 
-View this project live at [http://isotope.metafizzy.co](http://isotope.metafizzy.co).
+In a word: *Expandos*. Despite being the scourge of all web programming for many a year, they're occasionally necessary in cases where you need persistent data to be attached to a specific DOM object. **Isotope** certainly requires this, so it keeps track of lists of *atoms*--which are themselves DOM objects.
 
-## Licensing
+Where **Isotope** goes horribly wrong is in assigning the results of **jQuery** selector operations (specifically `not` and `filter`) *directly* to these expando lists. Every **jQuery** selector returns a `prevObject` attribute, which contains the *complete* result set of the previous selector--including the DOM objects selected--thusly supplying the magic necessary for its amazingly popular chaining mechanism to work.
 
-**Commercial use requires purchase of one-time license fee per developer seat.** Commercial use  includes any application that makes you money. This includes portfolio sites and premium templates. Commercial licenses may be purchased at [http://metafizzy.co#licenses](http://metafizzy.co#licenses).
+One of many examples littered throughout the **Isotope** code would look like:
 
-Use in non-commercial and personal applications is free.
-
-## Viewing this project locally
-
-### Via download
-
-You can download a zip of all the flat HTML files from [http://meta.metafizzy.co/files/isotope-site.zip](http://meta.metafizzy.co/files/isotope-site.zip).
-
-### Via Jekyll
-
-The documentation and demo pages are generated using [Jekyll](http://github.com/mojombo/jekyll/wiki). With Jekyll installed, you can clone this repo and run Jekyll from Terminal:
-
-``` bash
-git clone https://github.com/desandro/isotope.git
-cd isotope/
-jekyll --server --auto
+```javascript
+this.$allAtoms = this.$allAtoms.not( $content );
 ```
 
-Then view the live site at [http://localhost:4000](http://localhost:4000).
+So let's think about what that means for a minute. We've got ourselves an Isotope-ified DOM object--`this` and it's got some expando data attached to it called `$allAtoms`. We're running `$allAtoms` through `.not` in order to filter something undesireable out of it and re-assigning the result of that directly to `$allAtoms`.
 
-## Including Isotope as a submodule
+The result of that `not` contains a `prevObject` attribute, which contains the result of **jQuery's** selection efforts. Those will be child elements of `this` in every case, so `this` will be retaining references to those elements even after they've been removed.
 
-The _module_ branch has just `jquery.isotope.js` and `jquery.isotope.min.js`, perfect for adding to your repo as a [submodule](http://dropshado.ws/post/20058825150/git-submodules).
+But it gets worse because these assignments happen constantly and these cyclical references snowball. After just a few Isotope insertion/removal cycles, you'll have
 
-``` bash
-git submodule add https://github.com/desandro/isotope.git
-cd isotope/
-git checkout module
-git pull origin module
-cd ../
-git submodule update --init
+```javascript
+this.$allAtoms.prevObject.prevObject.prevObject.prevObject
 ```
 
-Then you can reference `isotope/jquery.isotope.min.js` within your own project.
+and so on and so forth. 
 
-To pull in the lastest version of the isotope submodule:
+Since all of those `prevObject`s have references to every single DOM element that's *ever* been inserted into the **Isotope** container they will *never* be freed. The more you use **Isotope**, the more shit you leave floating around in browser memory. The more shit you leave floating around in browser memory, the slower your page runs. You'll probably crash the whole goddamned browser, too, but hey, why would a grossly overpaid **Twitter** engineer care about that? Computers have all the memory in the world these days; fuck responsible coding and gimme my $50.
 
-``` bash
-cd isotope/
-git pull origin module
-```
+The Solution
+======== 
 
-## Changelog
-
-View the [commit history](https://github.com/desandro/isotope/commits/master/jquery.isotope.js) for a complete robust list of changes to the script.
-
-+ **v1.5**
-  [2011-10-19](https://github.com/desandro/isotope/commit/2c789ecb5ec#jquery.isotope.js)
-  - add proper callback support that trigger after animation/transition
-+ **v1.4** [2011-06-29](https://github.com/desandro/isotope/commit/8e2f51612eaf20e3031b81b8c5ff5e322cbb7b4f#jquery.isotope.js)
-  - shuffle method added
-  - inserting and appending positions items then reveals them
-+ **v1.3** [2011-05-23](https://github.com/desandro/isotope/commit/a7cc0be2a0038c13a2955a889a873f63a39eb6c2#jquery.isotope.js)
-  - refactor layout mode API
-  - layoutModeResize -> layoutModeResizeChanged, which returns boolean
-+ **v1.2** [2011-05-13](https://github.com/desandro/isotope/commit/b3cf6139d7641f282724a7a541b3bfb10d1bbf54#jquery.isotope.js)
-  - add updateOption method, for changing options after initialization
-+ **v1.1** [2011-04-26](https://github.com/desandro/isotope/commit/3c551406ee1e4cd8345cdbe589c2d8d1e164b259#jquery.isotope.js)
-  - incremental additions, bug fixes, and refactorings
-+ **v1.0** [2011-02-07](https://github.com/desandro/isotope/commit/78253dfb34808d9a677ae721e97c5afc08aa19b8#jquery.isotope.js)
-  - public release
+The fix is simple: **STOP ASSIGNING JQUERY SELECTOR RESULTS TO EXPANDOS!** Really. That's all it takes. It's not even a deeply guarded industry secret or anything. Here's a really long, really thorough paper about it from IBM: http://www.ibm.com/developerworks/web/library/wa-memleak/
 
 * * *
 
-Copyright (c) 2011-2012 David DeSandro / Metafizzy LLC
+Original work Copyright (c) 2011-2012 David DeSandro / Metafizzy LLC
