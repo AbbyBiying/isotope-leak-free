@@ -1,7 +1,7 @@
 Isotope (leak free)
 ========
 
-**Isotope** is a cool **jQuery** plugin that uses lots of other peoples' code to do lots of fancy animated arrangement, filtering and sorting. Unfortunately, it also leaks memory like a fucking sieve, and its author has expressed a complete lack of interest in remediating this situation despite having already authored a fix, so here's a fork for people who don't want their users' browsers to crash for the sake of eye candy.
+**Isotope** is a cool **jQuery** plugin that uses lots of other peoples' code to do lots of fancy animated arrangement, filtering and sorting. Unfortunately, it also leaks memory like a fucking sieve, and its author has expressed a complete lack of interest in remediating this situation despite having already authored a fix, so here's a fork for people who don't build standalone corporate vanity pages for agencies and don't want their users' browsers to crash for the sake of eye candy.
 
 The Problem
 ========
