@@ -16,11 +16,11 @@ One of many offenses littered throughout the **Isotope** code would look like:
 this.$allAtoms = this.$allAtoms.not( $content );
 ```
 
-Let's think about what that means for a minute. We've got ourselves an **Isotope**-ified DOM object--`this` and it's got some expando data attached to it called `$allAtoms`, which is a list of all of `this`'s child nodes. We're running `$allAtoms` through `not` in order to filter something undesireable out of it and re-assigning the result of that directly to `$allAtoms`.
+Let's think about what that means for a minute. We've got ourselves an **Isotope**-ified DOM object--for all intents and purposes: `this`--and it's got some expando data attached to it called `$allAtoms`, which is a list of all of `this`'s child nodes that **Isotope** has installed itself. We're running `$allAtoms` through `not` in order to filter something undesireable out of it and re-assigning the result of that directly to `$allAtoms`.
 
-The result of that `not` contains a `prevObject` attribute, which contains the result of **jQuery's** selection efforts. Again, those will be child nodes of `this` in every case, so `this` will be retaining chains of references to those elements even after they've been removed.
+The result of that `not` contains a `prevObject` attribute, which contains the result of **jQuery's** selection efforts. Again, that will be an array of child nodes of `this` in *every* case, so `this` will be retaining nested chains of cyclical references to those elements no matter how many times they're removed.
 
-But it gets worse because these assignments happen constantly and the cyclical references predictably snowball. After just a few **Isotope** insertion/removal cycles, you'll have
+But it gets worse because this re-filtering and re-assignment process happens *repeatedly* and the cyclical references they produce predictably snowball. After just a few **Isotope** insertion/removal cycles, you'll have
 
 ```javascript
 this.$allAtoms.prevObject.prevObject.prevObject.prevObject
@@ -30,13 +30,13 @@ and so on and so forth. Don't believe me? Ask Chrome's heap inspector:
 
 ![leaks](https://raw.github.com/khiltd/isotope-leak-free/master/isotope_leaks1.png)
 
-Since all of those `prevObject`s have references to every single DOM element that's *ever* been inserted into the **Isotope** container they will *never* be freed. If those are complicated DOM objects full of canvases and whatnot, you can easily build a staircase to 300MB of RAM consumption or more in just a few minutes of application use. 
+Since all of those `prevObject`s have references to every single DOM element that's *ever* been inserted into the **Isotope** container those elements will *never* be freed. If we're talking about complicated nodes full of canvases and whatnot, you can easily build a staircase to 300MB of RAM consumption or more in just a few minutes of application use if you're adding and removing things on an ongoing basis. 
 
 ![leaks](https://raw.github.com/khiltd/isotope-leak-free/master/isotope_leaks2.png)
 
 It's an honest mistake, but refusing to fix it is honestly, offensively stupid.
 
-The more you use **Isotope**, the more shit you leave floating around in browser memory. The more shit you leave floating around in browser memory, the slower your app runs. You'll probably crash the whole goddamned browser, too, but hey, why would a grossly overpaid **Twitter** engineer care about that? Computers have all the memory in the world these days; fuck responsible coding and gimme my $50.
+The more you use **Isotope**, the more shit you leave floating around in browser memory. The more shit you leave floating around in browser memory, the slower your app runs. You'll probably crash the whole goddamned browser, too, but hey, why would a grossly overpaid **Twitter** engineer care about that? Computers have all the memory in the world these days; fuck responsible coding and gimme my $50. P.S. What's a leak?
 
 The Solution
 ======== 
