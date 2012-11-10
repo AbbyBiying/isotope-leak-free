@@ -51,6 +51,8 @@ The fix is simple: **STOP ASSIGNING RAW JQUERY SELECTOR RESULTS TO EXPANDO PROPE
 
 http://www.ibm.com/developerworks/web/library/wa-memleak/
 
+![leakfree](https://raw.github.com/khiltd/isotope-leak-free/master/isotope_fixed.png)
+
 
 * * *
 
