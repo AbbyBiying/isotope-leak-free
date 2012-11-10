@@ -36,13 +36,15 @@ and so on and so forth. Don't believe me? Ask Chrome's heap inspector:
 
 ![leaks](https://raw.github.com/khiltd/isotope-leak-free/master/isotope_leaks1.png)
 
-Every one of those detached elements has outlived its usefulness and will never be seen again, but since all of their `prevObject`s contain references to every single DOM element that's *ever* been inserted into the **Isotope** container, and each one of them refers to yet another incarnation of the same array, those zombie elements will *never* be freed. Each part of the whole *contains* the whole *and all of its parts*, including itself. If we're talking about complicated nodes full of canvases and whatnot, you can easily build a staircase to 300MB of RAM consumption or more in just a few minutes of application use if you're adding and removing things on an ongoing basis because JavaScript's GC is refcounted. 
+Every one of those detached elements has outlived its usefulness and will never be seen again, but since all of their `prevObject`s contain references to every single DOM element that's *ever* been inserted into the **Isotope** container, and each one of them refers to yet another incarnation of the same array, those zombie elements will *never* be freed. Each part of the whole contains multiple copies of the whole and all of its parts, including itself. That's very holographic, but probably not at all what any sane person wants since JavaScript's GC is refcounted.
+
+If we're dealing with complicated nodes full of canvases and whatnot, you can easily build a staircase to 300MB of RAM consumption or more in just a few minutes of application use if you're adding and removing things on an ongoing basis.
 
 ![leaks](https://raw.github.com/khiltd/isotope-leak-free/master/isotope_leaks2.png)
 
 It's an honest mistake, but refusing to fix it is honestly, offensively stupid.
 
-The more you use **Isotope**, the more shit you leave floating around in browser memory. The more shit you leave floating around in browser memory, the slower your app runs. You'll probably crash the whole goddamned browser, too, but hey, why would a grossly overpaid **Twitter** engineer care about that? Computers have all the memory in the world these days; fuck responsible coding and gimme my $50. P.S. What's a leak?
+The more you use **Isotope**, the more shit you leave floating around in browser memory. The more shit you leave floating around in browser memory, the slower your app runs. You'll probably crash the whole goddamned browser, too, but hey, why would a grossly overpaid **Twitter** employee take that seriously? Computers have all the memory in the world these days; fuck responsible coding and gimme my $50. P.S. What's a leak?
 
 The Solution
 ======== 
@@ -51,10 +53,11 @@ The fix is simple: **STOP ASSIGNING RAW JQUERY SELECTOR RESULTS TO EXPANDO PROPE
 
 http://www.ibm.com/developerworks/web/library/wa-memleak/
 
-After plugging this horrible hole, things look much better:
+After plugging this horrible hole, things look much better. When GC runs, all the abandoned content is reaped exactly as it should be:
 
 ![leakfree](https://raw.github.com/khiltd/isotope-leak-free/master/isotope_fixed.png)
 
+Linters can only do so much, kids.
 
 * * *
 
