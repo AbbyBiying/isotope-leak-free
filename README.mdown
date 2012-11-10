@@ -1,12 +1,12 @@
 Isotope (leak free)
 ========
 
-**Isotope** is a cool **jQuery** plugin that uses lots of other peoples' code to do lots of fancy animated arrangement, filtering and sorting. Unfortunately, it also leaks memory like a fucking sieve, and its author has expressed a complete lack of interest in remediating this situation despite having already authored a fix, so here's a fork for people who don't build standalone corporate vanity pages for agencies and don't want their users' browsers to crash for the sake of eye candy.
+[**Isotope**](http://isotope.metafizzy.co) is a cool **jQuery** plugin that uses lots of other peoples' code to do lots of fancy animated arrangement, filtering and sorting. Unfortunately, it also leaks memory like a fucking sieve, and its author has expressed a complete lack of interest in remediating this situation despite having already authored a fix, so here's a fork for people who will get fired if they let their users' browsers crash for the sake of eye candy because they're not paid to build standalone corporate vanity pages for ad agencies.
 
 The Problem
 ========
 
-In a word: *Expandos*. Despite being the scourge of all web programming for many a year, they're occasionally necessary in cases where you need persistent data to be attached to a specific DOM object. **Isotope** certainly requires this, so it keeps track of lists of *atoms*--which are basically cutesy synonyms for DOM objects.
+In a word: *Expandos*. Despite being the scourge of all web programming for many a year (remember why everyone ran away from **Prototype** screaming?), they're occasionally necessary in cases where you really, really need persistent data attached to a specific DOM object. **Isotope** certainly requires this for much of its state awareness, so it keeps track of lists of *atoms*--which are basically cutesy synonyms for DOM objects.
 
 Where **Isotope** goes horribly wrong is in committing a textbook JavaScript sin by assigning the results of **jQuery** selector operations (specifically `not` and `filter`) *directly* to these expando lists. Every **jQuery** selector operation returns an array with an extra `prevObject` attribute. This attribute contains the *complete* result set of the selector--including the actual DOM objects selected--thusly supplying the magic necessary for its amazingly popular chaining mechanism to work.
 
@@ -36,7 +36,7 @@ and so on and so forth. Don't believe me? Ask Chrome's heap inspector:
 
 ![leaks](https://raw.github.com/khiltd/isotope-leak-free/master/isotope_leaks1.png)
 
-Since all of those `prevObject`s have references to every single DOM element that's *ever* been inserted into the **Isotope** container, and each one of them refers to yet another incarnation of the same array, those elements will *never* be freed. If we're talking about complicated nodes full of canvases and whatnot, you can easily build a staircase to 300MB of RAM consumption or more in just a few minutes of application use if you're adding and removing things on an ongoing basis. 
+Every one of those detached elements has outlived its usefulness and will never be seen again, but since all of their `prevObject`s contain references to every single DOM element that's *ever* been inserted into the **Isotope** container, and each one of them refers to yet another incarnation of the same array, those zombie elements will *never* be freed. Each part of the whole *contains* the whole *and all of its parts*, including itself. If we're talking about complicated nodes full of canvases and whatnot, you can easily build a staircase to 300MB of RAM consumption or more in just a few minutes of application use if you're adding and removing things on an ongoing basis because JavaScript's GC is refcounted. 
 
 ![leaks](https://raw.github.com/khiltd/isotope-leak-free/master/isotope_leaks2.png)
 
