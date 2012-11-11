@@ -12,7 +12,7 @@ Where **Isotope** goes horribly wrong is in committing a textbook JavaScript sin
 
 Check it out on your console:
 
-![leaks](https://raw.github.com/khiltd/isotope-leak-free/master/jquery_results_object.png)
+![leaks](https://raw.github.com/khiltd/isotope-leak-free/master/screenshots/jquery_results_object.png)
 
 One of many offenses littered throughout the **Isotope** code would look like:
 
@@ -24,7 +24,7 @@ Let's think about what that means for a minute. We've got ourselves an **Isotope
 
 The result of that `not` contains *another* `prevObject` attribute, which contains the result of **jQuery's** selection efforts. Again, that will be an array of child nodes of `this` in *every* case, so `this` will be retaining nested chains of cyclical references to those elements no matter how many times they're removed.
 
-![leaks](https://raw.github.com/khiltd/isotope-leak-free/master/jquery_results_object2.png)
+![leaks](https://raw.github.com/khiltd/isotope-leak-free/master/screenshots/jquery_results_object2.png)
 
 But it gets worse because this re-filtering and re-assignment process happens *repeatedly* and the cyclical references they produce predictably snowball. After just a few **Isotope** insertion/removal cycles, you'll have
 
@@ -34,13 +34,13 @@ this.$allAtoms.prevObject.prevObject.prevObject.prevObject
 
 and so on and so forth. Don't believe me? Ask Chrome's heap inspector:
 
-![leaks](https://raw.github.com/khiltd/isotope-leak-free/master/isotope_leaks1.png)
+![leaks](https://raw.github.com/khiltd/isotope-leak-free/master/screenshots/isotope_leaks1.png)
 
 Every one of those detached elements has outlived its usefulness and will never be seen again, but since all of their `prevObject`s contain references to every single DOM element that's *ever* been inserted into the **Isotope** container, and each one of them refers to yet another incarnation of the same array, those zombie elements will *never* be freed. Each part of the whole contains multiple copies of the whole and all of its parts, including itself. That's very holographic, but probably not at all what any sane person wants since JavaScript's GC is refcounted.
 
 If we're dealing with complicated nodes full of canvases and whatnot, you can easily build a staircase to 300MB of RAM consumption or more in just a few minutes of application use if you're adding and removing things on an ongoing basis.
 
-![leaks](https://raw.github.com/khiltd/isotope-leak-free/master/isotope_leaks2.png)
+![leaks](https://raw.github.com/khiltd/isotope-leak-free/master/screenshots/isotope_leaks2.png)
 
 It's an honest mistake, but refusing to fix it is honestly, offensively stupid.
 
@@ -55,7 +55,7 @@ http://www.ibm.com/developerworks/web/library/wa-memleak/
 
 After plugging this horrible hole, things look much better. When GC runs, all the abandoned content is reaped exactly as it should be:
 
-![leakfree](https://raw.github.com/khiltd/isotope-leak-free/master/isotope_fixed.png)
+![leakfree](https://raw.github.com/khiltd/isotope-leak-free/master/screenshots/isotope_fixed.png)
 
 Linters can only do so much, kids.
 
