@@ -62,3 +62,43 @@ Linters can only do so much, kids.
 * * *
 
 Original work Copyright (c) 2011-2012 David DeSandro / Metafizzy LLC and all the other people he copied and pasted from.
+
+* * * 
+
+And here's my license which entitles me to use all of this code in any commercial project I like:
+```
+Dec 7, 2012 10:56:20 PST | Receipt No: 2542-5500-0733-6758
+
+
+Hello Nathan Duran,
+
+You sent a payment of $25.00 USD to Metafizzy.
+This charge will appear on your credit card statement as payment to PAYPAL *METAFIZZY.
+
+----------------------------------------------------------------
+
+Merchant information:
+Metafizzy
+yo@metafizzy.co
+http://metafizzy.co
+
+
+Instructions to merchant:
+None provided
+
+----------------------------------------------------------------
+Payment details
+----------------------------------------------------------------
+
+Description:  Isotope Commercial License,  Item #: 13620, 
+Unit price: $25.00 USD
+Quantity: 1
+Amount: $25.00 USD
+
+
+
+Total: $25.00 USD
+
+Receipt No: 2542-5500-0733-6758
+Please keep this receipt number for future reference. You'll need it if you contact customer service at Metafizzy or PayPal.
+```
