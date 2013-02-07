@@ -42,9 +42,9 @@ If we're dealing with complicated nodes full of canvases and whatnot, you can ea
 
 ![leaks](https://raw.github.com/khiltd/isotope-leak-free/master/screenshots/isotope_leaks2.png)
 
-It's an honest mistake, but refusing to fix it is honestly, offensively stupid.
+Upon reading that comment, four engineers proceeded to slap themselves in unison. It's an honest mistake, but refusing to fix it is honestly, offensively stupid.
 
-The more you use **Isotope**, the more shit you leave floating around in browser memory. The more shit you leave floating around in browser memory, the slower your app runs. You'll probably crash the whole goddamned browser, too, but hey, why would a grossly overpaid **Twitter** employee take that seriously? Computers have all the memory in the world these days; fuck responsible coding and gimme my $50. P.S. What's a leak?
+The unfortunate reality is that the more you use **Isotope**, the more shit you leave floating around in browser memory. The more shit you leave floating around in browser memory, the slower your app runs. You'll probably crash the whole goddamned browser, too, but hey, why would a rockstar ninja **Twitter** employee need to take that seriously? Computers have all the memory in the world these days and there just aren't enough hours in the day to blog about golden ratios *and* solve problems that don't involve helping deviant miscreants share seven second iPhone videos of their misshapen genitalia with the world; fuck responsible coding and gimme my $50. P.S. What's a leak?
 
 The Solution
 ======== 
@@ -56,6 +56,8 @@ http://www.ibm.com/developerworks/web/library/wa-memleak/
 After plugging this horrible hole, things look much better. When GC runs, all the abandoned content is reaped exactly as it should be:
 
 ![leakfree](https://raw.github.com/khiltd/isotope-leak-free/master/screenshots/isotope_fixed.png)
+
+An admittedly better solution would be to just stop using **Isotope**, but we all have to ship at the end of the day, and the 20+ hours I wasted tracking this idiocy back to its source was ultimately less expensive than replacing the functionality I needed with something more specialized.
 
 Linters can only do so much, kids.
 
